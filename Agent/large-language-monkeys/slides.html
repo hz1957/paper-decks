@@ -73,6 +73,24 @@ p{margin:0}
 .foot{font-size:17px;line-height:1.6;color:var(--muted);max-width:64ch}
 strong{color:var(--ink);font-weight:700}
 
+/* paper figures: light-themed content, so they sit on a white card in both modes */
+.figcard{
+  margin:0;background:#fff;border:1px solid var(--hairline);border-radius:8px;
+  padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0;
+}
+.figcard img{display:block;width:100%;height:auto;max-height:560px;object-fit:contain;background:#fff}
+.figcard figcaption{font-size:14px;line-height:1.5;color:var(--muted)}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:36px;align-items:center}
+.split.narrow{grid-template-columns:minmax(0,1fr) 430px}
+.fcol{display:flex;flex-direction:column;gap:22px;min-width:0}
+.tiles-col{display:flex;flex-direction:column;gap:16px}
+.tiles-col .num{font-size:30px}
+.tiles-col .cap{margin-top:8px;font-size:15px}
+.split table.cost td{font-size:18px;padding-right:16px}
+.split table.cost th{font-size:13px;padding-right:16px}
+.chart-side .figcard{margin-bottom:20px}
+.chart-side .figcard img{max-height:270px}
+
 /* cover */
 .cover{text-align:left;gap:30px}
 .cover-title{
@@ -256,13 +274,10 @@ details.chart-data td{font-size:15px;color:var(--ink-2);text-align:right;padding
 <div class="slide">
   <div class="kicker">方法</div>
   <h2>重复采样,两步走</h2>
-  <div class="flow">
-    <div class="fbox"><strong>LLM</strong><span>同一 prompt · 温度 &gt; 0</span></div>
-    <div class="flow-arrow"><small>N 个独立候选解</small>→</div>
-    <div class="fbox"><strong>验证器</strong><span>单元测试 / Lean 检查器 / 投票</span></div>
-    <div class="flow-arrow">→</div>
-    <div class="fbox fb-accent"><strong>最终答案</strong></div>
-  </div>
+  <figure class="figcard">
+    <img src="figures/fig1.png" alt="重复采样流程:问题输入 LLM 生成多个候选解,验证器从中选出最终答案">
+    <figcaption>Figure 1 · 两步:LLM 以正温度生成 N 个候选解,领域验证器挑出最终答案</figcaption>
+  </figure>
   <div class="defs">
     <div class="defcard">
       <div class="def-en">Coverage<span>覆盖</span></div>
@@ -281,19 +296,25 @@ details.chart-data td{font-size:15px;color:var(--ink-2);text-align:right;padding
 <div class="slide">
   <div class="kicker">发现 ①</div>
   <h2>弱模型 + 海量采样,覆盖率平滑上涨</h2>
-  <div class="tiles">
-    <div class="tile">
-      <div class="num">15.9% <span class="arrow">→</span> 56%</div>
-      <div class="cap">SWE-bench Lite · DeepSeek-Coder-V2<br>250 次采样,超过单次 SOTA 的 43%</div>
+  <div class="split">
+    <div class="tiles tiles-col">
+      <div class="tile">
+        <div class="num">15.9% <span class="arrow">→</span> 56%</div>
+        <div class="cap">SWE-bench Lite · DeepSeek-Coder-V2 · 250 次采样,超过单次 SOTA 的 43%</div>
+      </div>
+      <div class="tile">
+        <div class="num">0.02% <span class="arrow">→</span> 7.1%</div>
+        <div class="cap">CodeContests · Gemma-2B · 覆盖率提升 300 倍</div>
+      </div>
+      <div class="tile">
+        <div class="num">0.27% <span class="arrow">→</span> 57%</div>
+        <div class="cap">MATH · Pythia-160M · 1.6 亿参数的小模型</div>
+      </div>
     </div>
-    <div class="tile">
-      <div class="num">0.02% <span class="arrow">→</span> 7.1%</div>
-      <div class="cap">CodeContests · Gemma-2B<br>覆盖率提升 300 倍</div>
-    </div>
-    <div class="tile">
-      <div class="num">0.27% <span class="arrow">→</span> 57%</div>
-      <div class="cap">MATH · Pythia-160M<br>1.6 亿参数的小模型</div>
-    </div>
+    <figure class="figcard">
+      <img src="figures/fig2.png" alt="五个任务的覆盖率随采样数上升的曲线,SWE-bench Lite 从 15.9% 升到 56%,越过单次 SOTA 43% 参考线">
+      <figcaption>Figure 2 · 五个任务上覆盖率随采样数平滑上升</figcaption>
+    </figure>
   </div>
   <p class="foot">唯一例外:Pythia 在 CodeContests 上采 1 万次仍为 0——训练数据几乎不含竞赛编程,采样救不了分布外的短板。</p>
 </div>
@@ -301,17 +322,36 @@ details.chart-data td{font-size:15px;color:var(--ink-2);text-align:right;padding
 
 <section>
 <div class="slide">
+  <div class="kicker">发现 ①</div>
+  <h2>跨模型尺寸与家族一致</h2>
+  <figure class="figcard">
+    <img src="figures/fig3.png" alt="70M 到 70B 参数共 11 个模型(Llama、Gemma、Pythia 家族)在 MATH 与 CodeContests 上的覆盖率曲线,均随采样数上升">
+    <figcaption>Figure 3 · 70M–70B、三个家族、Base/Instruct:重复采样的覆盖率增益普遍成立</figcaption>
+  </figure>
+</div>
+</section>
+
+<section>
+<div class="slide">
   <div class="kicker">发现 ②</div>
   <h2>采样换性能,还能省钱</h2>
-  <table class="cost">
-    <thead><tr><th>SWE-BENCH LITE + MOATLESS</th><th>单次成本</th><th>采样数</th><th>解决率</th><th>总成本</th></tr></thead>
-    <tbody>
-      <tr class="hl"><td>DeepSeek-Coder-V2</td><td>$0.0072</td><td>5</td><td>29.6%</td><td>$10.8</td></tr>
-      <tr><td>GPT-4o</td><td>$0.13</td><td>1</td><td>24.0%</td><td>$39</td></tr>
-      <tr><td>Claude 3.5 Sonnet</td><td>$0.17</td><td>1</td><td>26.7%</td><td>$51</td></tr>
-    </tbody>
-  </table>
-  <p class="lead">固定 FLOPs 预算时,最优策略随任务而变:MATH / GSM8K 上小模型多采样更划算,CodeContests 上大模型少采样更好。</p>
+  <div class="split narrow">
+    <div class="fcol">
+      <table class="cost">
+        <thead><tr><th>SWE-BENCH LITE + MOATLESS</th><th>单次成本</th><th>采样数</th><th>解决率</th><th>总成本</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>DeepSeek-Coder-V2</td><td>$0.0072</td><td>5</td><td>29.6%</td><td>$10.8</td></tr>
+          <tr><td>GPT-4o</td><td>$0.13</td><td>1</td><td>24.0%</td><td>$39</td></tr>
+          <tr><td>Claude 3.5 Sonnet</td><td>$0.17</td><td>1</td><td>26.7%</td><td>$51</td></tr>
+        </tbody>
+      </table>
+      <p class="lead">固定 FLOPs 预算时,最优策略随任务而变:MATH / GSM8K 上小模型多采样更划算,CodeContests 上大模型少采样更好。</p>
+    </div>
+    <figure class="figcard">
+      <img src="figures/fig4.png" alt="固定 FLOPs 下不同尺寸模型的覆盖率对比,以及换算成 API 价格的成本表">
+      <figcaption>Figure 4 + Table 1 · 固定 FLOPs 下最优模型尺寸因任务而异;DeepSeek 5 次采样总成本约为 GPT-4o 单次的三分之一</figcaption>
+    </figure>
+  </div>
   <p class="foot">重复采样是吞吐优先的批处理负载,还能吃到共享前缀等推理系统优化,实际成本更低。</p>
 </div>
 </section>
@@ -320,13 +360,32 @@ details.chart-data td{font-size:15px;color:var(--ink-2);text-align:right;padding
 <div class="slide">
   <div class="kicker">发现 ③</div>
   <h2>覆盖率遵循幂律——推理版缩放律</h2>
-  <div class="formula">c&nbsp;≈&nbsp;exp(a&nbsp;·&nbsp;k<sup>b</sup>)</div>
-  <div class="flist">
-    <p><span class="term">含义</span>log(coverage) 随采样数 k 的幂平滑增长,四个数量级内近似对数线性。</p>
-    <p><span class="term">类比</span>训练缩放律让「买算力换 loss」可外推;这条让「买采样换性能」可外推。</p>
-    <p><span class="term">家族规律</span>同族模型的曲线形状相同,大模型只是把小模型的曲线向左平移。</p>
-    <p><span class="term">注意</span>拟合并非处处精确(MiniF2F 偏差较大),是早期证据而非定律。</p>
+  <div class="split">
+    <div class="fcol">
+      <div class="formula">c&nbsp;≈&nbsp;exp(a&nbsp;·&nbsp;k<sup>b</sup>)</div>
+      <div class="flist">
+        <p><span class="term">含义</span>log(coverage) 随采样数 k 的幂平滑增长,四个数量级内近似对数线性。</p>
+        <p><span class="term">类比</span>训练缩放律让「买算力换 loss」可外推;这条让「买采样换性能」可外推。</p>
+        <p><span class="term">家族规律</span>同族模型的曲线形状相同,大模型只是把小模型的曲线向左平移(下页)。</p>
+        <p><span class="term">注意</span>拟合并非处处精确(MiniF2F 偏差较大),是早期证据而非定律。</p>
+      </div>
+    </div>
+    <figure class="figcard">
+      <img src="figures/fig5.png" alt="八组任务与模型组合的覆盖率数据点与指数化幂律拟合曲线,附拟合参数与误差">
+      <figcaption>Figure 5 · 八组任务×模型组合的指数化幂律拟合(附拟合参数与误差)</figcaption>
+    </figure>
   </div>
+</div>
+</section>
+
+<section>
+<div class="slide">
+  <div class="kicker">发现 ③</div>
+  <h2>大模型 = 小模型曲线的左移</h2>
+  <figure class="figcard">
+    <img src="figures/fig6.png" alt="同家族不同尺寸模型的覆盖率曲线,水平平移后几乎重合">
+    <figcaption>Figure 6 · 水平平移后同家族曲线几乎重合:家族内采样缩放形状相同</figcaption>
+  </figure>
 </div>
 </section>
 
@@ -410,10 +469,25 @@ details.chart-data td{font-size:15px;color:var(--ink-2);text-align:right;padding
       <div class="tip" id="tip" role="status"></div>
     </div>
     <div class="chart-side">
+      <figure class="figcard">
+        <img src="figures/fig8.png" alt="被多采样解锁的题目中,正确答案占全部采样解的比例条形图,红色表示多数投票选错——正确答案是极少数派">
+        <figcaption>Figure 8 · 红=多数投票错:被解锁题的正确答案是极少数派</figcaption>
+      </figure>
       <p>多采样解锁的是「单次正确率 &lt; 1%」的题——正确解在样本堆里是<strong>极少数派</strong>,多数投票天然投不出它,奖励模型也认不出它。</p>
       <p>人工抽检:90% 以上的正确思维链推理忠实有效。<strong>信号存在,只是现有方法用不上。</strong></p>
     </div>
   </div>
+</div>
+</section>
+
+<section>
+<div class="slide">
+  <div class="kicker">发现 ④</div>
+  <h2>饱和是普遍的,不是个例</h2>
+  <figure class="figcard">
+    <img src="figures/fig7.png" alt="四种任务与模型组合下,覆盖率曲线逼近 100%,而多数投票、奖励模型 Best-of-N、加权投票都在约 100 个样本处饱和">
+    <figcaption>Figure 7 · 四种任务×模型组合:覆盖率(蓝)逼近 100%,三种挑选方法都在 100 样本前饱和</figcaption>
+  </figure>
 </div>
 </section>
 

@@ -27,8 +27,9 @@ jobs:
 
       - name: Assemble site
         run: |
-          mkdir -p site
+          mkdir -p site site/figures
           cp Agent/large-language-monkeys/slides.html site/index.html
+          cp Agent/large-language-monkeys/figures/*.png site/figures/
 
       - uses: actions/upload-pages-artifact@v5
         with:
