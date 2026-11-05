@@ -1,0 +1,16 @@
+{
+  "name": "large-language-monkeys-slides",
+  "private": true,
+  "scripts": {
+    "build": "node build-slides.js"
+  },
+  "dependencies": {
+    "fontkit": "^2.0.4",
+    "linebreak": "^1.1.0",
+    "pptxgenjs": "4.0.0",
+    "skia-canvas": "^4.0.0"
+  },
+  "overrides": {
+    "image-size": "2.0.3"
+  }
+}

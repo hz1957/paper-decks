@@ -1,4 +1,4 @@
-name: Deploy slides to GitHub Pages
+name: Deploy slide PDF to GitHub Pages
 
 on:
   push:
@@ -27,9 +27,35 @@ jobs:
 
       - name: Assemble site
         run: |
-          mkdir -p site site/figures
-          cp Agent/large-language-monkeys/slides.html site/index.html
-          cp Agent/large-language-monkeys/figures/*.png site/figures/
+          mkdir -p site
+          cp Agent/large-language-monkeys/large-language-monkeys.pdf site/large-language-monkeys.pdf
+          cp Agent/large-language-monkeys/large-language-monkeys.pptx site/large-language-monkeys.pptx
+          touch site/.nojekyll
+          cat > site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="zh-CN">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>大语言猴子 · 论文分享</title>
+            <style>
+              * { box-sizing: border-box; }
+              html, body { width: 100%; height: 100%; margin: 0; background: #17191c; }
+              body { display: grid; grid-template-rows: 48px 1fr; font: 14px/1.4 system-ui, sans-serif; }
+              header { display: flex; align-items: center; justify-content: space-between; padding: 0 18px; color: #fff; }
+              a { color: #9fc0ff; }
+              iframe { width: 100%; height: 100%; border: 0; background: #f7f4ed; }
+            </style>
+          </head>
+          <body>
+            <header>
+              <span>大语言猴子：重复采样与推理时缩放</span>
+              <a href="large-language-monkeys.pptx" download>下载可编辑 PPTX</a>
+            </header>
+            <iframe src="large-language-monkeys.pdf#view=FitH" title="大语言猴子 Slides PDF"></iframe>
+          </body>
+          </html>
+          HTML
 
       - uses: actions/upload-pages-artifact@v5
         with:
