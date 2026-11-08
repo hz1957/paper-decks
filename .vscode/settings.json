@@ -1,0 +1,26 @@
+{
+  "latex-workshop.latex.tools": [
+    {
+      "name": "xelatex-miktex",
+      "command": "C:/Users/19576/AppData/Local/Programs/MiKTeX/miktex/bin/x64/xelatex.exe",
+      "args": [
+        "--enable-installer",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-halt-on-error",
+        "-file-line-error",
+        "-output-directory=%OUTDIR%",
+        "%DOC%"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "XeLaTeX ×2 (MiKTeX)",
+      "tools": ["xelatex-miktex", "xelatex-miktex"]
+    }
+  ],
+  "latex-workshop.latex.recipe.default": "first",
+  "latex-workshop.latex.outDir": "%DIR%/build",
+  "latex-workshop.view.pdf.viewer": "tab"
+}
