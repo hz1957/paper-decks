@@ -12,7 +12,7 @@ const pptx = new pptxgen();
 pptx.layout = "LAYOUT_WIDE";
 pptx.author = "OpenAI Codex";
 pptx.subject = "Large Language Monkeys paper presentation";
-pptx.title = "大语言猴子：重复采样与推理时缩放";
+pptx.title = "Large Language Monkeys: Scaling Inference Compute with Repeated Sampling";
 pptx.company = "";
 pptx.lang = "zh-CN";
 pptx.theme = {
@@ -179,8 +179,8 @@ function chartOpts(x, y, w, h, max, legend = false) {
   const s = pptx.addSlide();
   s.background = { color: C.bg };
   tx(s, "论文分享 · arXiv:2407.21787", 0.8, 0.64, 4.6, 0.25, { fontSize: 10.5, bold: true, color: C.blue });
-  tx(s, "大语言猴子", 0.8, 1.35, 7.2, 0.83, { fontSize: 43, bold: true });
-  tx(s, "Large Language Monkeys", 0.82, 2.27, 5.7, 0.32, { fontSize: 18, color: C.muted });
+  fitTx(s, "Large Language Monkeys", 0.8, 1.35, 7.6, 0.83, { fontSize: 43, minFontSize: 30, bold: true });
+  fitTx(s, "Scaling Inference Compute with Repeated Sampling", 0.82, 2.27, 7.4, 0.34, { fontSize: 18, minFontSize: 14, color: C.muted });
   fitTx(s, "重复采样如何把推理算力变成可预测的性能增长", 0.82, 3.02, 6.55, 0.88, { fontSize: 24, minFontSize: 20, bold: true });
 
   line(s, 8.45, 1.78, 12.1, 1.78, C.grid, 1.4);
@@ -426,6 +426,35 @@ function chartOpts(x, y, w, h, max, legend = false) {
   tx(s, "数据", 8.55, 4.92, 1.0, 0.22, { fontSize: 10, bold: true, color: C.orange });
   s.addText([{ text: "huggingface.co/datasets/\nScalingIntelligence/monkey_business", options: { hyperlink: { url: "https://huggingface.co/datasets/ScalingIntelligence/monkey_business" }, color: C.ink } }], { x: 8.55, y: 5.28, w: 3.8, h: 0.7, fontFace: FONT, fontSize: 12, margin: 0 });
   addNotes(s, "来源：论文总结、代码仓库与数据集链接。");
+}
+
+// 10-17. Appendix: recreated paper figures (vector-redrawn PNGs, see build-figures.js)
+{
+  const FIGS = [
+    { ar: 2000 / 660, t: "重复采样流程", cap: "Figure 1 · 重复采样流程：LLM 并行生成多个候选解，验证器挑选最终答案，由此提出 coverage 与 precision 两个问题" },
+    { ar: 2000 / 1260, t: "Coverage 随样本数缩放", cap: "Figure 2 · Coverage (pass@k) 随样本数 k 平滑缩放：8B-Instruct 在 MATH 上 k=250 时达 56%，超过单次采样的 70B-Instruct（43%）" },
+    { ar: 2000 / 1180, t: "13 个模型的 coverage 曲线", cap: "Figure 3 · 13 个模型在 MATH 与 CodeContests 上的 coverage 曲线：不同模型规模下 coverage 都随 k 持续改善" },
+    { ar: 2000 / 1560, t: "Coverage 与推理 FLOPs", cap: "Figure 4 · 以总推理 FLOPs 衡量，小模型 + 更多采样可能更省：DeepSeek-Coder-V2-Lite-Instruct 采 5 次约 1x 成本，单次 GPT-4o 与 Claude 3.5 Sonnet 分别为 3.6x 与 4.7x" },
+    { ar: 2000 / 1420, t: "Coverage 的幂律拟合", cap: "Figure 5 · 各模型与任务的 coverage 曲线均可用幂律 c = exp(a·k^b) 拟合，且拟合误差很小" },
+    { ar: 2000 / 940, t: "归一化后的曲线坍缩", cap: "Figure 6 · 横轴按 k / pass@k⁻¹（即除以 pass@1）归一化后，同族模型的 coverage 曲线近似坍缩到一条曲线" },
+    { ar: 2000 / 980, t: "选择策略对比", cap: "Figure 7 · 选择策略对比：多数投票持续优于 RM+Best-of-N，在多数投票上加 RM 增益有限；上限为 coverage (pass@k)" },
+    { ar: 2000 / 900, t: "逐题可解性分布", cap: "Figure 8 · 逐题正确样本比例（排序）：绿色 = 多数投票可解的题，红色 = 不可解；平均 coverage 高时仍有题目完全解不出" },
+  ];
+  const BX = 0.62, BW = 12.09, BY = 1.68, BH = 4.32;
+  FIGS.forEach((fig, i) => {
+    const s = baseSlide(`Figure ${i + 1} · ${fig.t}（复刻）`, 10 + i, "附录 · 论文图表复刻");
+    const w = Math.min(BW, BH * fig.ar);
+    const h = w / fig.ar;
+    s.addImage({
+      path: path.join(__dirname, "figures_recreated", `fig${i + 1}.png`),
+      x: BX + (BW - w) / 2,
+      y: BY + (BH - h) / 2,
+      w,
+      h,
+    });
+    fitTx(s, fig.cap, 0.75, 6.12, 11.83, 0.8, { fontSize: 11, minFontSize: 9, color: C.muted });
+    addNotes(s, `复刻图：以 skia-canvas 按论文 Figure ${i + 1} 的形状与配色矢量重绘后导出 PNG 嵌入；曲线数据取自论文公布的拟合参数或自原图读取。源图见 figures/fig${i + 1}.png，绘制脚本见 build-figures.js。`);
+  });
 }
 
 // These analyzers intentionally see overlaps where text sits on top of diagram boxes,
