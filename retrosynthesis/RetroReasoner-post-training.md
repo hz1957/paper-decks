@@ -4,6 +4,8 @@
 
 ## 1. 背景
 
+基于模板/图的逆合成模型（Aizyfinder、LocalRetro 等）和 LLM 方法覆盖的反应空间重合度低——前者靠规则库保证常见反应的稳定召回，后者通过推理链处理规则库外的转化，两者天然互补。这是选用 RetroReasoner 并结合传统模型做 ensemble（见 3.2）的动机。
+
 ### 1.1 模型输出结构
 
 RetroReasoner（Qwen3-8B）不是端到端翻译模型。首先，SyntheticRetro 管线把单步逆合成拆成四段结构化内容和三段过渡文本：
