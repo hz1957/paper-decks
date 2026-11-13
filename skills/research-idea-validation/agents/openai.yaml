@@ -1,0 +1,4 @@
+interface:
+  display_name: "科研选题收敛与验证"
+  short_description: "通过拆论文、争议地图、导师追问与审稿预演，把科研想法收敛成可证伪的研究计划"
+  default_prompt: "请用 $research-idea-validation 收敛并验证我的科研选题：先核对已有论文和资源约束，再逐轮追问，给出证据路径与最小验证计划。"
